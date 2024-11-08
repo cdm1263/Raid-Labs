@@ -2,33 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 import "./App.css";
-
-interface UserData {
-  score: number;
-  wins: number;
-  losses: number;
-  player: {
-    id: number;
-    name: string;
-    guild?: {
-      name: string;
-    };
-  };
-}
-
-interface RankedUserData extends UserData {
-  rank: number;
-}
-
-type Sort =
-  | "scoreUp"
-  | "scoreDown"
-  | "winsUp"
-  | "winsDown"
-  | "lossesUp"
-  | "lossesDown"
-  | "rateUp"
-  | "rateDown";
+import { RankedUserData, Sort, UserData } from "./lib/types";
 
 function App() {
   const [data, setData] = useState<RankedUserData[]>([]);
