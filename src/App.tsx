@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 import "./App.css";
@@ -33,6 +33,7 @@ function App() {
   const [listViews, setListViews] = useState(10);
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<Sort>("scoreDown");
+  const observeRef = useRef(null);
 
   const fetchUserData = async () => {
     setLoading(true);
@@ -85,7 +86,29 @@ function App() {
   useEffect(() => {
     const sorted = sortData(data);
     setSlicedData(sorted.slice(0, page * listViews));
-  }, [data, sort, page]);
+  }, [data, sort, page, listViews]);
+
+  useEffect(() => {
+    const currentRef = observeRef.current;
+    if (data.length > 0) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && !loading) {
+            setPage((prev) => prev + 1);
+          }
+        },
+        { threshold: 0.6 }
+      );
+
+      if (currentRef) {
+        observer.observe(currentRef);
+      }
+
+      return () => {
+        if (currentRef) observer.disconnect();
+      };
+    }
+  }, [observeRef, loading, data.length]);
 
   return (
     <div className="table-wrapper">
@@ -133,6 +156,7 @@ function App() {
             </div>
           ))}
       </div>
+      <div ref={observeRef} />
       {loading && <p>loading...</p>}
     </div>
   );
