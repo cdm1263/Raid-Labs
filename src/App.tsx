@@ -1,6 +1,6 @@
 import "./App.css";
 import LeaderboardHeader from "./components/LeaderboardHeader";
-import useLeaderboardData from "./hooks/useLeaderBoardData";
+import useLeaderboardData from "./hooks/useLeaderboardData";
 import { calculateRate } from "./lib/utils";
 
 function App() {
