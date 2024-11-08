@@ -3,6 +3,7 @@ import LeaderboardHeader from "./components/LeaderboardHeader";
 import LeaderboardRow from "./components/LeaderboardRow";
 import useLeaderboardData from "./hooks/useLeaderboardData";
 import "./App.css";
+import Loading from "./components/Loading";
 
 function App() {
   const { slicedData, setListViews, setSort, observeRef, isLoading } =
@@ -46,7 +47,7 @@ function App() {
             ))}
         </div>
         <div ref={observeRef} />
-        {isLoading && <p>loading...</p>}
+        {isLoading && <Loading />}
       </div>
     </section>
   );
