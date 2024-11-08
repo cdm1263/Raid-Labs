@@ -1,11 +1,17 @@
-import "./App.css";
+import { ChangeEvent } from "react";
 import LeaderboardHeader from "./components/LeaderboardHeader";
+import LeaderboardRow from "./components/LeaderboardRow";
 import useLeaderboardData from "./hooks/useLeaderboardData";
-import { calculateRate } from "./lib/utils";
+import "./App.css";
 
 function App() {
   const { slicedData, setListViews, setSort, observeRef, isLoading } =
     useLeaderboardData();
+
+  const handleSortChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setListViews(Number(event.target.value));
+  };
+
   return (
     <section>
       <h1>Leaderboard</h1>
@@ -16,7 +22,7 @@ function App() {
             type="radio"
             name="listViews"
             value="10"
-            onChange={(e) => setListViews(Number(e.target.value))}
+            onChange={handleSortChange}
           />
           10개
         </label>
@@ -25,7 +31,7 @@ function App() {
             type="radio"
             name="listViews"
             value="20"
-            onChange={(e) => setListViews(Number(e.target.value))}
+            onChange={handleSortChange}
           />
           20개
         </label>
@@ -36,19 +42,7 @@ function App() {
         <div>
           {slicedData &&
             slicedData.map((content) => (
-              <div className="grid-container grid-row" key={content.player.id}>
-                <div className="grid-item">{content.rank}</div>
-                <div className="grid-item">{content.player.name}</div>
-                <div className="grid-item">
-                  {content.player.guild?.name ?? "-"}
-                </div>
-                <div className="grid-item">{content.score}</div>
-                <div className="grid-item">{content.wins}</div>
-                <div className="grid-item">{content.losses}</div>
-                <div className="grid-item">
-                  {calculateRate(content.wins, content.losses)}%
-                </div>
-              </div>
+              <LeaderboardRow content={content} key={content.player.id} />
             ))}
         </div>
         <div ref={observeRef} />
