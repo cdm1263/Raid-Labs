@@ -18,24 +18,26 @@ function App() {
       <h1>Leaderboard</h1>
       <div>
         <p>표시할 리스트 수</p>
-        <label>
-          <input
-            type="radio"
-            name="listViews"
-            value="10"
-            onChange={handleSortChange}
-          />
-          10개
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="listViews"
-            value="20"
-            onChange={handleSortChange}
-          />
-          20개
-        </label>
+        <form className="list-views">
+          <label>
+            <input
+              type="radio"
+              name="listViews"
+              value="10"
+              onChange={handleSortChange}
+            />
+            10개
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="listViews"
+              value="20"
+              onChange={handleSortChange}
+            />
+            20개
+          </label>
+        </form>
       </div>
       <div className="table-wrapper">
         <LeaderboardHeader handleSort={setSort} />

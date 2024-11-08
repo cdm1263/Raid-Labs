@@ -59,3 +59,13 @@
   font-weight: bold;
   font-size: 36px;
 }
+
+.list-views {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+
+  input {
+    cursor: pointer;
+  }
+}
