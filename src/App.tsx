@@ -1,5 +1,5 @@
-import { ArrowDown, ArrowUp } from "lucide-react";
 import "./App.css";
+import LeaderboardHeader from "./components/LeaderboardHeader";
 import useLeaderboardData from "./hooks/useLeaderBoardData";
 import { calculateRate } from "./lib/utils";
 
@@ -26,36 +26,12 @@ function App() {
             name="listViews"
             value="20"
             onChange={(e) => setListViews(Number(e.target.value))}
-          />{" "}
+          />
           20개
         </label>
       </div>
       <div className="table-wrapper">
-        <div className="grid-container table-header">
-          <div className="grid-header">Rank</div>
-          <div className="grid-header">Player Name</div>
-          <div className="grid-header">Guild</div>
-          <div className="grid-header sort">
-            <ArrowUp onClick={() => setSort("scoreUp")} />
-            <div>Score</div>
-            <ArrowDown onClick={() => setSort("scoreDown")} />
-          </div>
-          <div className="grid-header sort">
-            <ArrowUp onClick={() => setSort("winsUp")} />
-            <div>Wins</div>
-            <ArrowDown onClick={() => setSort("winsDown")} />
-          </div>
-          <div className="grid-header sort">
-            <ArrowUp onClick={() => setSort("lossesUp")} />
-            <div>Losses</div>
-            <ArrowDown onClick={() => setSort("lossesDown")} />
-          </div>
-          <div className="grid-header sort">
-            <ArrowUp onClick={() => setSort("rateUp")} />
-            <div>Win Rate</div>
-            <ArrowDown onClick={() => setSort("rateDown")} />
-          </div>
-        </div>
+        <LeaderboardHeader handleSort={setSort} />
 
         <div>
           {slicedData &&
