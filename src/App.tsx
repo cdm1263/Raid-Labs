@@ -16,6 +16,10 @@ interface UserData {
   };
 }
 
+interface RankedUserData extends UserData {
+  rank: number;
+}
+
 type Sort =
   | "scoreUp"
   | "scoreDown"
@@ -27,8 +31,8 @@ type Sort =
   | "rateDown";
 
 function App() {
-  const [data, setData] = useState<UserData[]>([]);
-  const [slicedData, setSlicedData] = useState<UserData[]>([]);
+  const [data, setData] = useState<RankedUserData[]>([]);
+  const [slicedData, setSlicedData] = useState<RankedUserData[]>([]);
   const [loading, setLoading] = useState(false);
   const [listViews, setListViews] = useState(10);
   const [page, setPage] = useState(1);
@@ -41,8 +45,14 @@ function App() {
       "https://gateway.pinata.cloud/ipfs/bafkreia2tigtk5kv5x6mptrscob7rwyvooyzte2j7luimkfssvm3m2zf54"
     );
 
-    const data = await response.json();
-    setData(data);
+    const data: UserData[] = await response.json();
+    const rankedData = data
+      .sort((a, b) => b.score - a.score)
+      .map((content, index) => ({
+        ...content,
+        rank: index + 1,
+      }));
+    setData(rankedData);
     setLoading(false);
   };
 
@@ -54,7 +64,7 @@ function App() {
     return Math.round((wins / (wins + losses)) * 1000) / 10;
   };
 
-  const sortData = (data: UserData[]) => {
+  const sortData = (data: RankedUserData[]) => {
     return [...data].sort((a, b) => {
       switch (sort) {
         case "scoreUp":
@@ -113,8 +123,9 @@ function App() {
   return (
     <div className="table-wrapper">
       <div className="grid-container table-header">
+        <div className="grid-header">Rank</div>
         <div className="grid-header">Player Name</div>
-        <div className="grid-header">Player Id</div>
+        <div className="grid-header">Guild</div>
         <div className="grid-header sort">
           <ArrowUp onClick={() => setSort("scoreUp")} />
           <div>Score</div>
@@ -135,23 +146,22 @@ function App() {
           <div>Win Rate</div>
           <ArrowDown onClick={() => setSort("rateDown")} />
         </div>
-        <div className="grid-header">Guild</div>
       </div>
 
       <div>
         {slicedData &&
           slicedData.map((content) => (
             <div className="grid-container grid-row" key={content.player.id}>
+              <div className="grid-item">{content.rank}</div>
               <div className="grid-item">{content.player.name}</div>
-              <div className="grid-item">{content.player.id}</div>
+              <div className="grid-item">
+                {content.player.guild?.name ?? "-"}
+              </div>
               <div className="grid-item">{content.score}</div>
               <div className="grid-item">{content.wins}</div>
               <div className="grid-item">{content.losses}</div>
               <div className="grid-item">
                 {calculateRate(content.wins, content.losses)}%
-              </div>
-              <div className="grid-item">
-                {content.player.guild?.name ?? "-"}
               </div>
             </div>
           ))}
