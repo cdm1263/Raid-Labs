@@ -1,78 +1,11 @@
-import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUp } from "lucide-react";
-
 import "./App.css";
-import { RankedUserData, Sort } from "./lib/types";
-import useFetchUserData from "./hooks/useFetchUserData";
+import useLeaderboardData from "./hooks/useLeaderBoardData";
+import { calculateRate } from "./lib/utils";
 
 function App() {
-  const [slicedData, setSlicedData] = useState<RankedUserData[]>([]);
-  const [listViews, setListViews] = useState(10);
-  const [page, setPage] = useState(1);
-  const [sort, setSort] = useState<Sort>("scoreDown");
-  const observeRef = useRef(null);
-  const { originalData, isLoading } = useFetchUserData();
-
-  const calculateRate = (wins: number, losses: number) => {
-    return Math.round((wins / (wins + losses)) * 1000) / 10;
-  };
-
-  const sortData = (data: RankedUserData[]) => {
-    return [...data].sort((a, b) => {
-      switch (sort) {
-        case "scoreUp":
-          return a.score - b.score;
-        case "scoreDown":
-          return b.score - a.score;
-        case "winsUp":
-          return a.wins - b.wins;
-        case "winsDown":
-          return b.wins - a.wins;
-        case "lossesUp":
-          return a.losses - b.losses;
-        case "lossesDown":
-          return b.losses - a.losses;
-        case "rateUp":
-          return (
-            calculateRate(a.wins, a.losses) - calculateRate(b.wins, b.losses)
-          );
-        case "rateDown":
-          return (
-            calculateRate(b.wins, b.losses) - calculateRate(a.wins, a.losses)
-          );
-        default:
-          return 0;
-      }
-    });
-  };
-
-  useEffect(() => {
-    const sorted = sortData(originalData);
-    setSlicedData(sorted.slice(0, page * listViews));
-  }, [originalData, sort, page, listViews]);
-
-  useEffect(() => {
-    const currentRef = observeRef.current;
-    if (originalData.length > 0) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting && !isLoading) {
-            setPage((prev) => prev + 1);
-          }
-        },
-        { threshold: 0.6 }
-      );
-
-      if (currentRef) {
-        observer.observe(currentRef);
-      }
-
-      return () => {
-        if (currentRef) observer.disconnect();
-      };
-    }
-  }, [observeRef, isLoading, originalData.length]);
-
+  const { slicedData, setListViews, setSort, observeRef, isLoading } =
+    useLeaderboardData();
   return (
     <section>
       <h1>Leaderboard</h1>
