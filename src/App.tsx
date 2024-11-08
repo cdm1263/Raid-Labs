@@ -2,37 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 import "./App.css";
-import { RankedUserData, Sort, UserData } from "./lib/types";
+import { RankedUserData, Sort } from "./lib/types";
+import useFetchUserData from "./hooks/useFetchUserData";
 
 function App() {
-  const [data, setData] = useState<RankedUserData[]>([]);
   const [slicedData, setSlicedData] = useState<RankedUserData[]>([]);
-  const [loading, setLoading] = useState(false);
   const [listViews, setListViews] = useState(10);
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState<Sort>("scoreDown");
   const observeRef = useRef(null);
-
-  const fetchUserData = async () => {
-    setLoading(true);
-    const response = await fetch(
-      "https://gateway.pinata.cloud/ipfs/bafkreia2tigtk5kv5x6mptrscob7rwyvooyzte2j7luimkfssvm3m2zf54"
-    );
-
-    const data: UserData[] = await response.json();
-    const rankedData = data
-      .sort((a, b) => b.score - a.score)
-      .map((content, index) => ({
-        ...content,
-        rank: index + 1,
-      }));
-    setData(rankedData);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchUserData();
-  }, []);
+  const { originalData, isLoading } = useFetchUserData();
 
   const calculateRate = (wins: number, losses: number) => {
     return Math.round((wins / (wins + losses)) * 1000) / 10;
@@ -68,16 +47,16 @@ function App() {
   };
 
   useEffect(() => {
-    const sorted = sortData(data);
+    const sorted = sortData(originalData);
     setSlicedData(sorted.slice(0, page * listViews));
-  }, [data, sort, page, listViews]);
+  }, [originalData, sort, page, listViews]);
 
   useEffect(() => {
     const currentRef = observeRef.current;
-    if (data.length > 0) {
+    if (originalData.length > 0) {
       const observer = new IntersectionObserver(
         (entries) => {
-          if (entries[0].isIntersecting && !loading) {
+          if (entries[0].isIntersecting && !isLoading) {
             setPage((prev) => prev + 1);
           }
         },
@@ -92,7 +71,7 @@ function App() {
         if (currentRef) observer.disconnect();
       };
     }
-  }, [observeRef, loading, data.length]);
+  }, [observeRef, isLoading, originalData.length]);
 
   return (
     <section>
@@ -164,7 +143,7 @@ function App() {
             ))}
         </div>
         <div ref={observeRef} />
-        {loading && <p>loading...</p>}
+        {isLoading && <p>loading...</p>}
       </div>
     </section>
   );
